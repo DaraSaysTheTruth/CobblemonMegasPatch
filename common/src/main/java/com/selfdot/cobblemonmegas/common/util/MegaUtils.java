@@ -67,7 +67,7 @@ public class MegaUtils {
         BattleActor playerBattleActor = battle.getActor(player);
         if (playerBattleActor == null) return "PlayerBattleActor is null (Report this error)";
         List<ActiveBattlePokemon> activeBattlePokemon = playerBattleActor.getActivePokemon();
-        if (activeBattlePokemon.size() != 1) return "Mega evolution is currently only available in 1v1 battles.";
+        if (activeBattlePokemon.isEmpty()) return "Mega evolution is currently only available in 1v1 battles.";
         BattlePokemon battlePokemon = activeBattlePokemon.getFirst().getBattlePokemon();
         if (battlePokemon == null) battlePokemon = playerBattleActor.getPokemonList().getFirst();
 
@@ -141,7 +141,7 @@ public class MegaUtils {
         BattleActor playerBattleActor = battle.getActor(player);
         if (playerBattleActor == null) return false;
         List<ActiveBattlePokemon> activeBattlePokemon = playerBattleActor.getActivePokemon();
-        if (activeBattlePokemon.size() != 1) return false;
+        if (activeBattlePokemon.isEmpty()) return false;
         BattlePokemon battlePokemon = activeBattlePokemon.getFirst().getBattlePokemon();
         if (battlePokemon == null) return false;
         Pokemon pokemon = battlePokemon.getEffectedPokemon();

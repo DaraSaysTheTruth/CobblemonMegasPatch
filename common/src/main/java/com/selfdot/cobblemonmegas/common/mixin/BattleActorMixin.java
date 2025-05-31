@@ -21,21 +21,17 @@ import java.util.UUID;
 
 @Mixin(BattleActor.class)
 public abstract class BattleActorMixin {
-
     @Shadow(remap = false) public abstract UUID getUuid();
     @Shadow(remap = false) public abstract Iterable<UUID> getPlayerUUIDs();
-
     @Shadow(remap = false) private List<ShowdownActionResponse> responses;
-
     @Shadow(remap = false) @Final private List<ActiveBattlePokemon> activePokemon;
-
     @Inject(method = "writeShowdownResponse", at = @At("HEAD"), remap = false)
     private void injectWriteShowdownResponse(CallbackInfo ci) {
         UUID uuid = getUuid();
         if (CobblemonMegas.getInstance().getToMegaEvolveThisTurn().remove(uuid)) {
-            if (responses.size() != 1) return;
+            if (responses.isEmpty()) return;
             if (!(responses.getFirst() instanceof MoveActionResponse moveActionResponse)) return;
-            if (activePokemon.size() != 1) return;
+            if (activePokemon.isEmpty()) return;
             BattlePokemon battlePokemon = activePokemon.getFirst().getBattlePokemon();
             if (battlePokemon == null) return;
             String megaStone = battlePokemon.getHeldItemManager().showdownId(battlePokemon);
@@ -53,5 +49,4 @@ public abstract class BattleActorMixin {
             MegaUtils.updateKeyStoneGlow(player);
         });
     }
-
 }
