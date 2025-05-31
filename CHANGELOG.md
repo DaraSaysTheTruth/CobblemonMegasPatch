@@ -1,3 +1,16 @@
+# 1.3.3
+- Fixed Charizard and Mewtwo abilities not being set after mega evolving
+- Made mega evolution possible in double-triple pvp formats. However ! : 
+    - The Pokémon you chose to mega evolve must be in the first battleground slot of your side (The first Pokémon you take action on at the beginning of a turn).
+    - You must right-click with the keystone in hand before choosing a move. The mega evolution button won't work.
+  
+
+*Note: After following feedbacks from some Cobblemon addon and original mod developers, 
+it seems that fully supporting Mega Evolution in multi battles may be technically not possible. 
+This limitation comes from the fact that the mod is server-side only, and Cobblemon clients don't handle communication properly for Mega Evolution and other gimmicks outside of single battles.*
+
+*If you have any insights or solutions, feel free to open a ticket to get in touch.*
+
 # 1.3.2
 - Fixed abilities being set incorrectly after mega evolving.
 
