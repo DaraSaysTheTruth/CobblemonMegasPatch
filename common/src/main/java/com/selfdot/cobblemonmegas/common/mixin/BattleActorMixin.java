@@ -30,13 +30,19 @@ public abstract class BattleActorMixin {
         UUID uuid = getUuid();
         if (CobblemonMegas.getInstance().getToMegaEvolveThisTurn().remove(uuid)) {
             if (responses.isEmpty()) return;
-            if (!(responses.getFirst() instanceof MoveActionResponse moveActionResponse)) return;
-            if (activePokemon.isEmpty()) return;
-            BattlePokemon battlePokemon = activePokemon.getFirst().getBattlePokemon();
-            if (battlePokemon == null) return;
-            String megaStone = battlePokemon.getHeldItemManager().showdownId(battlePokemon);
-            if (megaStone == null) return;
-            moveActionResponse.setGimmickID(ShowdownMoveset.Gimmick.MEGA_EVOLUTION.getId());
+            for(int response=0;response<responses.size();response++){
+                if (!(responses.get(response) instanceof MoveActionResponse moveActionResponse)) continue;
+                if (CobblemonMegas.getInstance().getMegaEvolveTarget().remove(activePokemon.get(response))) {
+                    if (activePokemon.isEmpty()) continue;
+                    BattlePokemon battlePokemon = activePokemon.get(response).getBattlePokemon();
+                    if (battlePokemon == null) continue;
+                    String megaStone = battlePokemon.getHeldItemManager().showdownId(battlePokemon);
+                    if (megaStone == null) continue;
+                    moveActionResponse.setGimmickID(ShowdownMoveset.Gimmick.MEGA_EVOLUTION.getId());
+                }
+
+            }
+
         }
     }
 
