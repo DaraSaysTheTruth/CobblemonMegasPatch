@@ -1,3 +1,10 @@
+# 1.3.4
+- Pokémon can now be in any slot within Double and Triple PVP Battles.
+- Right-clicking the keystone will now give feedback based on active Pokémon eligibility on Mega Evolution.
+    - Right-clicking the keystone with an eligible active Pokémon will now give feedback on mega evolving next turn when the player chooses a move.
+    - You can right-click again to toggle off the mega evolution choice. 
+    - The keystone will gain an enchantment glint when toggled on.
+
 # 1.3.3
 - Fixed Charizard and Mewtwo abilities not being set after mega evolving
 - Made mega evolution possible in double-triple pvp formats. However ! : 

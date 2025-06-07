@@ -29,6 +29,10 @@ import static net.minecraft.component.DataComponentTypes.ENCHANTMENT_GLINT_OVERR
 public class MegaUtils {
 
     public static String reasonCannotMegaEvolve(ServerPlayerEntity player, Pokemon pokemon) {
+        return reasonCannotMegaEvolve(player,pokemon, 0);
+    }
+
+    public static String reasonCannotMegaEvolve(ServerPlayerEntity player, Pokemon pokemon, int pokemonPos) {
         if (
             Stream.of(DataKeys.MEGA, DataKeys.MEGA_X, DataKeys.MEGA_Y)
                 .noneMatch(aspect -> pokemon.getSpecies().getFeatures().contains(aspect))
@@ -68,8 +72,8 @@ public class MegaUtils {
         if (playerBattleActor == null) return "PlayerBattleActor is null (Report this error)";
         List<ActiveBattlePokemon> activeBattlePokemon = playerBattleActor.getActivePokemon();
         if (activeBattlePokemon.isEmpty()) return "There's no available Pokémon";
-        BattlePokemon battlePokemon = activeBattlePokemon.getFirst().getBattlePokemon();
-        if (battlePokemon == null) battlePokemon = playerBattleActor.getPokemonList().getFirst();
+        BattlePokemon battlePokemon = activeBattlePokemon.get(pokemonPos).getBattlePokemon();
+        if (battlePokemon == null) battlePokemon = playerBattleActor.getPokemonList().get(pokemonPos);
 
         if (!battlePokemon.getEffectedPokemon().getUuid().equals(pokemon.getUuid())) {
             return "This is not your active battle Pokémon.";
@@ -115,8 +119,9 @@ public class MegaUtils {
     }
 
     public static void updateKeyStoneGlow(ItemStack itemStack, PlayerEntity player) {
-        NbtCompound nbt = NbtUtils.getNbt(itemStack, DataKeys.MOD_NAMESPACE);
-        if (nbt.isEmpty() || !nbt.contains(DataKeys.NBT_KEY_KEY_STONE)) return;
+        //NbtCompound nbt = NbtUtils.getNbt(itemStack, DataKeys.MOD_NAMESPACE);
+        boolean hasKeyStone = NbtUtils.getNbt(itemStack,"").contains(DataKeys.NBT_KEY_KEY_STONE);
+        if (!hasKeyStone) return;
 
         if (CobblemonMegas.getInstance().getToMegaEvolveThisTurn().contains(player.getUuid())) {
             itemStack.set(ENCHANTMENT_GLINT_OVERRIDE, true);
@@ -132,21 +137,25 @@ public class MegaUtils {
     }
 
     public static boolean attemptMegaEvolveInBattle(ServerPlayerEntity player, boolean shouldTellSuccess) {
+        return attemptMegaEvolveInBattle(player,shouldTellSuccess,0);
+    }
+
+    public static boolean attemptMegaEvolveInBattle(ServerPlayerEntity player, boolean shouldTellSuccess, int pokemonPos) {
         PokemonBattle battle = BattleRegistry.INSTANCE.getBattleByParticipatingPlayer(player);
         if (battle == null) {
             sendError(player, "This can only be used in battle.");
             return false;
         }
-
         BattleActor playerBattleActor = battle.getActor(player);
         if (playerBattleActor == null) return false;
         List<ActiveBattlePokemon> activeBattlePokemon = playerBattleActor.getActivePokemon();
         if (activeBattlePokemon.isEmpty()) return false;
-        BattlePokemon battlePokemon = activeBattlePokemon.getFirst().getBattlePokemon();
+        BattlePokemon battlePokemon = activeBattlePokemon.get(pokemonPos).getBattlePokemon();
         if (battlePokemon == null) return false;
         Pokemon pokemon = battlePokemon.getEffectedPokemon();
 
         Set<UUID> toMegaEvolveThisTurn = CobblemonMegas.getInstance().getToMegaEvolveThisTurn();
+        Set<ActiveBattlePokemon> megaEvolveTarget = CobblemonMegas.getInstance().getMegaEvolveTarget();
         UUID actorId = playerBattleActor.getUuid();
         if (toMegaEvolveThisTurn.contains(actorId)) {
             toMegaEvolveThisTurn.remove(actorId);
@@ -159,13 +168,14 @@ public class MegaUtils {
             return true;
         }
 
-        String reasonCannotMegaEvolve = MegaUtils.reasonCannotMegaEvolve(player, pokemon);
+        String reasonCannotMegaEvolve = MegaUtils.reasonCannotMegaEvolve(player, pokemon, pokemonPos);
         if (reasonCannotMegaEvolve != null) {
             sendError(player, reasonCannotMegaEvolve);
             return false;
         }
 
         toMegaEvolveThisTurn.add(actorId);
+        megaEvolveTarget.add(activeBattlePokemon.get(pokemonPos));
         updateKeyStoneGlow(player);
         if (shouldTellSuccess) {
             player.sendMessage(Text.literal(

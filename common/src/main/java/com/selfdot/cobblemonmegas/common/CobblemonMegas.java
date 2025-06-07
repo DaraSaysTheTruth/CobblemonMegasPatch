@@ -9,6 +9,7 @@ import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
 import com.cobblemon.mod.common.api.pokemon.feature.FlagSpeciesFeatureProvider;
 import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatures;
 import com.cobblemon.mod.common.api.pokemon.helditem.HeldItemProvider;
+import com.cobblemon.mod.common.battles.ActiveBattlePokemon;
 import com.cobblemon.mod.common.pokemon.Species;
 import com.selfdot.cobblemonmegas.common.command.CommandTree;
 import com.selfdot.cobblemonmegas.common.command.permissions.PermissionValidator;
@@ -56,6 +57,7 @@ public class CobblemonMegas extends DisableableMod {
     @Setter
     private PermissionValidator permissionValidator = new VanillaPermissionValidator();
     private final Set<UUID> TO_MEGA_EVOLVE_THIS_TURN = new HashSet<>();
+    private final Set<ActiveBattlePokemon> MEGA_EVOLVE_TARGET = new HashSet<>();
     private final Set<UUID> HAS_MEGA_EVOLVED_THIS_BATTLE = new HashSet<>();
     @Getter
     private final ConcurrentHashMap<UUID, Ability> originalAbilities = new ConcurrentHashMap<>();
@@ -70,6 +72,8 @@ public class CobblemonMegas extends DisableableMod {
     public Set<UUID> getHasMegaEvolvedThisBattle() {
         return HAS_MEGA_EVOLVED_THIS_BATTLE;
     }
+
+    public Set<ActiveBattlePokemon> getMegaEvolveTarget(){return MEGA_EVOLVE_TARGET; }
 
     public void onInitialize() {
         config = new Config(this);
